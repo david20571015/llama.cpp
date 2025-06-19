@@ -985,7 +985,7 @@ static const char * GGML_OP_NAME[GGML_OP_COUNT] = {
     "OPT_STEP_ADAMW",
 };
 
-static_assert(GGML_OP_COUNT == 82, "GGML_OP_COUNT != 82");
+static_assert(GGML_OP_COUNT == 83, "GGML_OP_COUNT != 83");
 
 static const char * GGML_OP_SYMBOL[GGML_OP_COUNT] = {
     "none",
@@ -1080,7 +1080,7 @@ static const char * GGML_OP_SYMBOL[GGML_OP_COUNT] = {
     "adamw(x)",
 };
 
-static_assert(GGML_OP_COUNT == 82, "GGML_OP_COUNT != 82");
+static_assert(GGML_OP_COUNT == 83, "GGML_OP_COUNT != 83");
 
 static_assert(GGML_OP_POOL_COUNT == 2, "GGML_OP_POOL_COUNT != 2");
 
@@ -3389,6 +3389,28 @@ struct ggml_tensor * ggml_get_rows_back(
     result->op     = GGML_OP_GET_ROWS_BACK;
     result->src[0] = a;
     result->src[1] = b;
+
+    return result;
+}
+
+// ggml_set_rows
+
+struct ggml_tensor * ggml_set_rows(
+        struct ggml_context * ctx,
+        struct ggml_tensor  * a,
+        struct ggml_tensor  * b,
+        struct ggml_tensor  * c) {
+    GGML_ASSERT(b->ne[2] == c->ne[1]);
+    GGML_ASSERT(c->ne[3] == 1);
+    GGML_ASSERT(a->type == GGML_TYPE_F16);
+    GGML_ASSERT(b->type == GGML_TYPE_F32);
+    GGML_ASSERT(c->type == GGML_TYPE_I32);
+
+    struct ggml_tensor * result = ggml_view_tensor(ctx, a);
+
+    result->op     = GGML_OP_SET_ROWS;
+    result->src[0] = b;
+    result->src[1] = c;
 
     return result;
 }
